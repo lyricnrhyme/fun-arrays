@@ -6,6 +6,16 @@ var dataset = require('./dataset.json');
   assign the resulting new array to `hundredThousandairs`
 */
 var hundredThousandairs = null;
+// console.log(dataset);
+// console.log(dataset.bankBalances)
+let info = dataset.bankBalances;
+const highAmount = info.filter(item => {
+  return item.amount > 100000;
+})
+// console.log(highAmount);
+hundredThousandairs = highAmount;
+
+console.log("checkem", info);
 
 /*
   DO NOT MUTATE DATA.
@@ -25,6 +35,21 @@ var hundredThousandairs = null;
   assign the resulting new array to `datasetWithRoundedDollar`
 */
 var datasetWithRoundedDollar = null;
+const roundObj = info.map(item => {
+  let rounder = 0;
+  if (item.amount < (Math.floor(item.amount) + 0.5)) {
+    rounder = Math.floor(item.amount);
+  } else {
+    rounder = Math.ceil(item.amount);
+  }
+  return {
+    "amount": item.amount,
+    "state": item.state,
+    "rounded": rounder
+  }
+})
+// console.log("test", roundObj);
+datasetWithRoundedDollar = roundObj;
 
 /*
   DO NOT MUTATE DATA.
@@ -50,9 +75,28 @@ var datasetWithRoundedDollar = null;
   assign the resulting new array to `roundedDime`
 */
 var datasetWithRoundedDime = null;
+const roundDime = info.map(item => {
+  let tenth = 0;
+  if (item.amount*10 < Math.floor(item.amount*10) + 0.5) {
+    tenth = Math.floor(item.amount*10)/10;
+  } else {
+    tenth = Math.ceil(item.amount*10)/10;
+  }
+  return {
+    "amount": item.amount,
+    "state": item.state,
+    "roundedDime": tenth
+  }
+})
+// console.log("test", roundDime);
+datasetWithRoundedDime = roundDime;
 
 // set sumOfBankBalances to be the sum of all value held at `amount` for each bank object
 var sumOfBankBalances = null;
+const addEmUp = info.reduce((item, add) => {
+    return Math.round((item + Number(add.amount))*100)/100;
+},0);
+sumOfBankBalances = addEmUp;
 
 /*
   from each of the following states:
@@ -66,6 +110,22 @@ var sumOfBankBalances = null;
   and then sum it all up into one value saved to `sumOfInterests`
  */
 var sumOfInterests = null;
+const wisconsin = info.filter(item => {
+  return item.state === "WI";
+})
+const illinois = info.filter(item => {
+  return item.state === "IL";
+})
+const wyoming = info.filter(item => {
+  return item.state === "WY";
+})
+const ohio = info.filter(item => {
+  return item.state === "OH";
+})
+console.log("WI test", wisconsin);
+console.log("IL test", illinois);
+console.log("WY test", wyoming);
+console.log("OH test", ohio);
 
 /*
   aggregate the sum of bankBalance amounts
