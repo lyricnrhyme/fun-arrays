@@ -16,6 +16,9 @@ const highAmount = info.filter(item => {
 hundredThousandairs = highAmount;
 
 console.log("checkem", info);
+console.log("*****************")
+console.log("*****************")
+console.log("*****************")
 
 /*
   DO NOT MUTATE DATA.
@@ -110,22 +113,15 @@ sumOfBankBalances = addEmUp;
   and then sum it all up into one value saved to `sumOfInterests`
  */
 var sumOfInterests = null;
-const wisconsin = info.filter(item => {
-  return item.state === "WI";
-})
-const illinois = info.filter(item => {
-  return item.state === "IL";
-})
-const wyoming = info.filter(item => {
-  return item.state === "WY";
-})
-const ohio = info.filter(item => {
-  return item.state === "OH";
-})
-console.log("WI test", wisconsin);
-console.log("IL test", illinois);
-console.log("WY test", wyoming);
-console.log("OH test", ohio);
+const statesInterest = info.filter(item => {
+  if (item.state === "WI" || item.state === "IL" || item.state === "WY" || item.state === "OH" || item.state === "GA" || item.state === "DE") {
+    return Math.round(item.amount*.189*100)/100;
+  }
+}).reduce((item, add) => {
+  return Math.round((item + Number(add.amount*.189))*100)/100;
+},0) 
+// console.log("states", statesInterest);
+sumOfInterests = statesInterest;
 
 /*
   aggregate the sum of bankBalance amounts
@@ -143,7 +139,16 @@ console.log("OH test", ohio);
     round this number to the nearest 10th of a cent before moving on.
   )
  */
-var stateSums = null;
+var stateSums = {};
+const addStates = info.forEach(item => {
+  if (!stateSums.hasOwnProperty(item.state)) {
+    stateSums[item.state] = (Math.round(Number(item.amount)*100))/100;
+  } else {
+    stateSums[item.state] = (Math.floor((stateSums[item.state]+Number(item.amount))*100))/100;
+    // console.log("result", stateSums[item.state]);
+  }
+})
+// console.log("test", stateSums)
 
 /*
   for all states *NOT* in the following states:
@@ -163,6 +168,25 @@ var stateSums = null;
   )
  */
 var sumOfHighInterests = null;
+const stateSum = info.filter(item => {
+  if (item.state!=="WI"&&item.state!=="IL"&&item.state!=="WY"&&item.state!=="OH"&&item.state!=="GA"&&item.state!=="DE") {
+    return item;
+  }
+}).map(item => {
+  // console.log("map", item);
+  return Math.round(item.amount*.189*100)/100;
+}).reduce((item,add) => {
+  if (add < 50000) {
+    console.log("less", add);
+    return item;
+  } else {
+    console.log("more", add);
+    let newSum = item + add;
+    return newSum;
+  }
+},0);
+console.log("test", stateSum);
+sumOfHighInterests = stateSum;
 
 /*
   set `lowerSumStates` to be an array of two letter state
