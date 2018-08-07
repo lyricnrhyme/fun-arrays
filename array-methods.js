@@ -140,15 +140,13 @@ sumOfInterests = statesInterest;
   )
  */
 var stateSums = {};
-const addStates = info.forEach(item => {
+const addStates = info.map(item => {
   if (!stateSums.hasOwnProperty(item.state)) {
     stateSums[item.state] = (Math.round(Number(item.amount)*100))/100;
   } else {
-    stateSums[item.state] = (Math.floor((stateSums[item.state]+Number(item.amount))*100))/100;
-    // console.log("result", stateSums[item.state]);
+    stateSums[item.state] = (Math.round((stateSums[item.state]+Number(item.amount))*100))/100;
   }
 })
-// console.log("test", stateSums)
 
 /*
   for all states *NOT* in the following states:
@@ -167,39 +165,95 @@ const addStates = info.forEach(item => {
     round this number to the nearest 10th of a cent before moving on.
   )
  */
+
 var sumOfHighInterests = null;
 const stateSum = info.filter(item => {
   if (item.state!=="WI"&&item.state!=="IL"&&item.state!=="WY"&&item.state!=="OH"&&item.state!=="GA"&&item.state!=="DE") {
     return item;
   }
-}).map(item => {
-  // console.log("map", item);
-  return Math.round(item.amount*.189*100)/100;
-}).reduce((item,add) => {
-  if (add < 50000) {
-    console.log("less", add);
-    return item;
+})
+let combinedStates = {};
+const sumEmUp = stateSum.forEach(item => {
+  if (!combinedStates.hasOwnProperty(item.state)) {
+    combinedStates[item.state] = (Math.round(Number(item.amount)*100))/100;
   } else {
-    console.log("more", add);
-    let newSum = item + add;
-    return newSum;
+    combinedStates[item.state] = (Math.round((combinedStates[item.state]+Number(item.amount))*100))/100;
   }
-},0);
-console.log("test", stateSum);
-sumOfHighInterests = stateSum;
+})
+let plsWork = Object.values(combinedStates);
+let moreThan50k = [];
+const endProduct = plsWork.forEach(item => {
+  if (item*.189 > 50000) {
+    moreThan50k.push(item);
+  }
+})
+const plsplsWork = moreThan50k.reduce((item,add) => {
+  return (Math.round((item + (Number(add)*.189))*100))/100;
+},0)
+
+sumOfHighInterests = plsplsWork;
 
 /*
   set `lowerSumStates` to be an array of two letter state
   abbreviations of each state where the sum of amounts
   in the state is less than 1,000,000
  */
-var lowerSumStates = null;
+var lowerSumStates = [];
+let lowerAdd = {};
+const lower = info.forEach(item => {
+  if (!lowerAdd.hasOwnProperty(item.state)) {
+    lowerAdd[item.state] = (Math.round(Number(item.amount)*100))/100;
+  } else {
+    lowerAdd[item.state] = (Math.round((lowerAdd[item.state] + Number(item.amount))*100))/100;
+  }
+})
+const keyVal = Object.keys(lowerAdd).map(key => {
+  return {
+    "state": key,
+    "amount": lowerAdd[key]
+  };
+}).filter(item => {
+  if (item.amount < 1000000) {
+    return item;
+  }
+}).map(item => {
+  return item.state;
+})
+// console.log("keyVal", keyVal);
+lowerSumStates = keyVal;
+
 
 /*
   aggregate the sum of each state into one hash table
   `higherStateSums` should be the sum of all states with totals greater than 1,000,000
  */
 var higherStateSums = null;
+var higherSumStates = [];
+let higherAdd = {};
+const higher = info.forEach(item => {
+  if (!higherAdd.hasOwnProperty(item.state)) {
+    higherAdd[item.state] = (Math.round(Number(item.amount)*100))/100;
+  } else {
+    higherAdd[item.state] = (Math.round((higherAdd[item.state] + Number(item.amount))*100))/100;
+  }
+})
+const keyValHigh = Object.keys(higherAdd).map(key => {
+  return {
+    "state": key,
+    "amount": higherAdd[key]
+  };
+}).filter(item => {
+  if (item.amount > 1000000) {
+    return item;
+  }
+}).map(item => {
+  return item.amount;
+}).reduce((item, add) => {
+  return Math.round((item + Number(add))*100)/100;
+},0)
+console.log("keyValHigh", keyValHigh);
+// console.log("keyVal", keyVal);
+higherStateSums = keyValHigh;
 
 /*
   from each of the following states:
@@ -217,6 +271,43 @@ var higherStateSums = null;
   otherwise set it to `false`
  */
 var areStatesInHigherStateSum = null;
+const alwaysDese = info.filter(item => {
+  if (item.state === "WI" || item.state === "IL" || item.state === "WY" || item.state === "OH" || item.state === "GA" || item.state === "DE") {
+    return item;
+  }
+});
+let highMill = {};
+const addSumEmUp = alwaysDese.forEach(item => {
+  if (!highMill.hasOwnProperty(item.state)) {
+    highMill[item.state] = (Math.round(Number(item.amount)*100))/100;
+  } else {
+    highMill[item.state] = (Math.round((highMill[item.state] + Number(item.amount))*100))/100;
+  }
+})
+const keyValHigher = Object.keys(highMill).map(key => {
+  return {
+    "state": key,
+    "amount": highMill[key]
+  }
+})
+let isIt;
+const checkemAgain = keyValHigher.map(item => {
+  if (isIt === false) {
+    return item;
+  } else {
+    if (item.amount > 2550000) {
+      isIt = true;
+      return item;
+    } else {
+      isIt = false;
+      return item;
+    }
+  }
+}).reduce((item,add) => {
+  return (Math.round((item + add)*100))/100;
+},0)
+areStatesInHigherStateSum = isIt;
+
 
 /*
   Stretch Goal && Final Boss
@@ -233,6 +324,41 @@ var areStatesInHigherStateSum = null;
   otherwise set it to be `false`
  */
 var anyStatesInHigherStateSum = null;
+const alwaysDese2 = info.filter(item => {
+  if (item.state === "WI" || item.state === "IL" || item.state === "WY" || item.state === "OH" || item.state === "GA" || item.state === "DE") {
+    return item;
+  }
+});
+let highMill2 = {};
+const addSumEmUp2 = alwaysDese2.forEach(item => {
+  if (!highMill2.hasOwnProperty(item.state)) {
+    highMill2[item.state] = (Math.round(Number(item.amount)*100))/100;
+  } else {
+    highMill2[item.state] = (Math.round((highMill2[item.state] + Number(item.amount))*100))/100;
+  }
+})
+const keyValHigher2 = Object.keys(highMill2).map(key => {
+  return {
+    "state": key,
+    "amount": highMill2[key]
+  }
+})
+let isIt2;
+const checkemAgain2 = keyValHigher2.map(item => {
+  if (isIt2 === true) {
+    return item;
+  } else {
+    if (item.amount > 2550000) {
+      isIt2 = true;
+      return item;
+    } else {
+      return item;
+    }
+  }
+}).reduce((item,add) => {
+  return (Math.round((item + add)*100))/100;
+},0)
+anyStatesInHigherStateSum = isIt2;
 
 
 module.exports = {
